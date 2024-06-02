@@ -1,3 +1,4 @@
+@tool
 class_name CardPileUI extends Control
 
 signal draw_pile_updated
@@ -24,8 +25,14 @@ enum PilesCardLayouts {
 	down
 }
 
+## Deprecated, use card_database instead
+## @deprecated
 @export_file("*.json") var json_card_database_path : String
+## Deprecated, use card_collection instead
+## @deprecated
 @export_file("*.json") var json_card_collection_path : String
+@export var card_database: CardDB
+@export var card_collection: Array
 @export var extended_card_ui : PackedScene
 
 @export_group("Pile Positions")
@@ -65,9 +72,6 @@ enum PilesCardLayouts {
 @export var discard_pile_layout := PilesCardLayouts.up
 
 
-var card_database := [] # an array of JSON `Card` data
-var card_collection := [] # an array of JSON `Card` data
-
 var _draw_pile := [] # an array of `CardUI`s
 var _hand_pile := [] # an array of `CardUI`s
 var _discard_pile := [] # an array of `CardUI`s
@@ -75,7 +79,10 @@ var _discard_pile := [] # an array of `CardUI`s
 
 var spread_curve := Curve.new()
 
-
+func _validate_property(property):
+	if property.name in ["json_card_database_path", "json_card_collection_path"]:
+		if not get(property.name):
+			property.usage &= ~PROPERTY_USAGE_EDITOR
 
 # this is really the only way we should move cards between piles
 func set_card_pile(card : CardUI, pile : Piles):
@@ -137,27 +144,25 @@ func get_card_pile_size(pile : Piles):
 	return 0
 
 
-
 func _maybe_remove_card_from_any_piles(card : CardUI):
 	if _hand_pile.find(card) != -1:
 		_hand_pile.erase(card)
-		emit_signal("hand_pile_updated")
+		hand_pile_updated.emit()
 	elif _draw_pile.find(card) != -1:
 		_draw_pile.erase(card)
-		emit_signal("draw_pile_updated")
+		draw_pile_updated.emit()
 	elif _discard_pile.find(card) != -1:
 		_discard_pile.erase(card)
-		emit_signal("discard_pile_updated")
-
+		discard_pile_updated.emit()
 
 
 func create_card_in_dropzone(nice_name : String, dropzone : CardDropzone):
-	var card_ui = _create_card_ui(_get_card_data_by_nice_name(nice_name))
+	var card_ui = _create_card_ui(card_database.get_card(nice_name))
 	card_ui.position = dropzone.position
 	set_card_dropzone(card_ui, dropzone)
 
 func create_card_in_pile(nice_name : String, pile_to_add_to : Piles):
-	var card_ui = _create_card_ui(_get_card_data_by_nice_name(nice_name))
+	var card_ui = _create_card_ui(card_database.get_card(nice_name))
 	if pile_to_add_to == Piles.hand_pile:
 		card_ui.position = hand_pile_position
 	if pile_to_add_to == Piles.discard_pile:
@@ -191,19 +196,13 @@ func _get_dropzones(node: Node, className : String, result : Array) -> void:
 		_get_dropzones(child, className, result)
 
 
-func load_json_path():
-	card_database = _load_json_cards_from_path(json_card_database_path)
-	card_collection = _load_json_cards_from_path(json_card_collection_path)
-
-func _load_json_cards_from_path(path : String):
-	var found = []
-	if path:
-		var json_as_text = FileAccess.get_file_as_string(path)
-		var json_as_dict = JSON.parse_string(json_as_text)
-		if json_as_dict:
-			for c in json_as_dict:
-				found.push_back(c)
-	return found
+func prepare_card_db():
+	# Backwards compatibility
+	if not card_database and json_card_database_path:
+		card_database = JSONFileCardDB.new(json_card_database_path)
+	if not card_collection and json_card_collection_path:
+		card_collection = JSONFileCardDB._load_json(json_card_collection_path)
+	card_database.prepare()
 
 func reset():
 	_reset_card_collection()
@@ -214,7 +213,7 @@ func _reset_card_collection():
 		_maybe_remove_card_from_any_dropzones(child)
 		remove_card_from_game(child)
 	for nice_name in card_collection:
-		var card_data = _get_card_data_by_nice_name(nice_name)
+		var card_data = card_database.get_card(nice_name)
 		var card_ui = _create_card_ui(card_data)
 		_draw_pile.push_back(card_ui)
 		_draw_pile.shuffle()
@@ -224,10 +223,12 @@ func _reset_card_collection():
 	emit_signal("discard_pile_updated")
 
 func _ready():
+	if Engine.is_editor_hint():
+		return
 	size = Vector2.ZERO
 	spread_curve.add_point(Vector2(0, -1), 0, 0, Curve.TANGENT_LINEAR, Curve.TANGENT_LINEAR)
 	spread_curve.add_point(Vector2(1, 1), 0, 0, Curve.TANGENT_LINEAR, Curve.TANGENT_LINEAR)
-	load_json_path()
+	prepare_card_db()
 	_reset_card_collection()
 	reset_target_positions()
 
@@ -380,28 +381,18 @@ func sort_hand(sort_func):
 	_hand_pile.sort_custom(sort_func)
 	reset_target_positions()
 
-func _create_card_ui(json_data : Dictionary):
+func _create_card_ui(card_data):
 	var card_ui = extended_card_ui.instantiate()
-	card_ui.frontface_texture = json_data.texture_path
-	card_ui.backface_texture = json_data.backface_texture_path
+	card_ui.card_data = card_data
+	card_ui.frontface_texture = card_data.frontface_texture
+	card_ui.backface_texture = card_data.backface_texture
 	card_ui.return_speed = card_return_speed
 	card_ui.hover_distance = card_ui_hover_distance
 	card_ui.drag_when_clicked = drag_when_clicked
 
-	card_ui.card_data = ResourceLoader.load(json_data.resource_script_path).new()
-	for key in json_data.keys():
-		if key != "texture_path" and key != "backface_texture_path" and key != "resource_script_path":
-			card_ui.card_data[key] = json_data[key]
 	card_ui.connect("card_hovered", func(c_ui): emit_signal("card_hovered", c_ui))
 	card_ui.connect("card_unhovered", func(c_ui): emit_signal("card_unhovered", c_ui))
 	card_ui.connect("card_clicked", func(c_ui): emit_signal("card_clicked", c_ui))
 	card_ui.connect("card_dropped", func(c_ui): emit_signal("card_dropped", c_ui))
 	add_child(card_ui)
 	return card_ui
-
-
-func _get_card_data_by_nice_name(nice_name : String):
-	for json_data in card_database:
-		if json_data.nice_name == nice_name:
-			return json_data
-	return null

@@ -15,8 +15,8 @@ signal card_dropped(card: CardUI)
 @export var card_data : CardUIData
 
 
-var frontface_texture : String
-var backface_texture : String
+var frontface_texture : Texture2D
+var backface_texture : Texture2D
 var is_clicked := false
 var mouse_is_hovering := false
 var target_position := Vector2.ZERO
@@ -40,7 +40,7 @@ func set_disabled(val : bool):
 		var parent = get_parent()
 		if parent is CardPileUI:
 			parent.reset_card_ui_z_index()
-			
+
 func _ready():
 	if Engine.is_editor_hint():
 		set_disabled(true)
@@ -50,8 +50,8 @@ func _ready():
 	connect("mouse_exited", _on_mouse_exited)
 	connect("gui_input", _on_gui_input)
 	if frontface_texture:
-		frontface.texture = load(frontface_texture)
-		backface.texture = load(backface_texture)
+		frontface.texture = frontface_texture
+		backface.texture = backface_texture
 		custom_minimum_size = frontface.texture.get_size()
 		pivot_offset = frontface.texture.get_size() / 2
 		mouse_filter = Control.MOUSE_FILTER_PASS
@@ -70,7 +70,7 @@ func _card_can_be_interacted_with():
 		if dropzone:
 			valid = dropzone.get_top_card() == self and not parent.is_any_card_ui_clicked()
 	return valid
-			
+
 
 
 func _on_mouse_enter():
@@ -93,18 +93,18 @@ func _on_mouse_exited():
 		if parent is CardPileUI:
 			parent.reset_card_ui_z_index()
 		emit_signal("card_unhovered", self)
-	
+
 func _on_gui_input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			var parent = get_parent()
-			
+
 			if _card_can_be_interacted_with():
 				is_clicked = true
 				rotation = 0
 				parent.reset_card_ui_z_index()
 				emit_signal("card_clicked", self)
-			
+
 			if parent is CardPileUI and parent.get_card_pile_size(CardPileUI.Piles.draw_pile) > 0 and parent.is_hand_enabled() and parent.get_cards_in_pile(CardPileUI.Piles.draw_pile).find(self) != -1 and not parent.is_any_card_ui_clicked() and parent.click_draw_pile_to_draw:
 				parent.draw(1)
 		else:
@@ -125,7 +125,7 @@ func _on_gui_input(event):
 							break
 				emit_signal("card_dropped", self)
 				emit_signal("card_unhovered", self)
-			
+
 
 func get_dropzones(node: Node, className : String, result : Array) -> void:
 	if node is CardDropzone:
@@ -140,7 +140,7 @@ func _process(_delta):
 		position = target_position
 	elif position != target_position:
 		position = lerp(position, target_position, return_speed)
-		
+
 	if Engine.is_editor_hint() and last_child_count != get_child_count():
 		update_configuration_warnings()
 		last_child_count = get_child_count()

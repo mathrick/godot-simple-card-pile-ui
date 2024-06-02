@@ -25,14 +25,14 @@ enum PilesCardLayouts {
 	down
 }
 
-## Deprecated, use card_database instead
+## Deprecated, use [member card_database] instead
 ## @deprecated
 @export_file("*.json") var json_card_database_path : String
-## Deprecated, use card_collection instead
+## Deprecated, use [member card_collection] instead
 ## @deprecated
 @export_file("*.json") var json_card_collection_path : String
 @export var card_database: CardDB
-@export var card_collection: Array
+@export var card_collection: CardCollection
 @export var extended_card_ui : PackedScene
 
 @export_group("Pile Positions")
@@ -201,7 +201,7 @@ func prepare_card_db():
 	if not card_database and json_card_database_path:
 		card_database = JSONFileCardDB.new(json_card_database_path)
 	if not card_collection and json_card_collection_path:
-		card_collection = JSONFileCardDB._load_json(json_card_collection_path)
+		card_collection = JSONFileCardCollection.new(json_card_collection_path)
 	card_database.prepare()
 
 func reset():
@@ -212,7 +212,7 @@ func _reset_card_collection():
 		_maybe_remove_card_from_any_piles(child)
 		_maybe_remove_card_from_any_dropzones(child)
 		remove_card_from_game(child)
-	for nice_name in card_collection:
+	for nice_name in card_collection.all:
 		var card_data = card_database.get_card(nice_name)
 		var card_ui = _create_card_ui(card_data)
 		_draw_pile.push_back(card_ui)

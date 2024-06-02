@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bayw73ve8ui7r"]
+[gd_scene load_steps=15 format=3 uid="uid://bayw73ve8ui7r"]
 
 [ext_resource type="Script" path="res://example/example.gd" id="1_0dn0o"]
 [ext_resource type="Script" path="res://addons/simple_card_pile_ui/card_pile_ui_debugger.gd" id="2_7gbt2"]
@@ -7,10 +7,21 @@
 [ext_resource type="Script" path="res://example/example__dropzone__play_by_suit.gd" id="4_cyr6y"]
 [ext_resource type="Texture2D" uid="uid://bpjxsk1mxfl77" path="res://assets/1x1_#ffffffff.png" id="4_eyd4o"]
 [ext_resource type="PackedScene" uid="uid://bs2vgjwuarxm5" path="res://example/example__card_ui.tscn" id="6_df1s4"]
+[ext_resource type="Script" path="res://addons/simple_card_pile_ui/card_db/json_file_card_db.gd" id="7_wllo0"]
+[ext_resource type="Script" path="res://addons/simple_card_pile_ui/card_db/json_file_card_collection.gd" id="8_4pkxv"]
 
 [sub_resource type="Theme" id="Theme_oqbkv"]
 Button/font_sizes/font_size = 12
 RichTextLabel/font_sizes/normal_font_size = 12
+
+[sub_resource type="Resource" id="Resource_uyfu7"]
+script = ExtResource("7_wllo0")
+json_file_path = "res://example/example__card_database.json"
+
+[sub_resource type="Resource" id="Resource_x3wkq"]
+script = ExtResource("8_4pkxv")
+json_file_path = "res://example/example__card_collection.json"
+all = []
 
 [sub_resource type="Curve" id="Curve_ayyaa"]
 min_value = -15.0
@@ -266,8 +277,8 @@ horizontal_alignment = 1
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("3_axm7s")
-json_card_database_path = "res://example/example__card_database.json"
-json_card_collection_path = "res://example/example__card_collection.json"
+card_database = SubResource("Resource_uyfu7")
+card_collection = SubResource("Resource_x3wkq")
 extended_card_ui = ExtResource("6_df1s4")
 draw_pile_layout = 2
 max_hand_size = 7

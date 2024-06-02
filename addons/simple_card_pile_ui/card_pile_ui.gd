@@ -58,7 +58,7 @@ enum PilesCardLayouts {
 @export var hand_rotation_curve : Curve
 ## This works best as a 3-point ease in/out from 0 to X to 0
 @export var hand_vertical_curve : Curve
-#@export var drag_sort_enabled := true this would be nice to have, but based on how dragging works I'm not 100% sure how to handle it, possibly disable mouse input on the card being dragged? 
+#@export var drag_sort_enabled := true this would be nice to have, but based on how dragging works I'm not 100% sure how to handle it, possibly disable mouse input on the card being dragged?
 
 @export_group("Discard Pile")
 @export var discard_face_up := true
@@ -91,21 +91,21 @@ func set_card_pile(card : CardUI, pile : Piles):
 		_draw_pile.push_back(card)
 		emit_signal("draw_pile_updated")
 	reset_target_positions()
-	
+
 func set_card_dropzone(card : CardUI, dropzone : CardDropzone):
 	_maybe_remove_card_from_any_piles(card)
 	_maybe_remove_card_from_any_dropzones(card)
 	dropzone.add_card(card)
 	emit_signal("card_added_to_dropzone", dropzone, card)
 	reset_target_positions()
-	
+
 func remove_card_from_game(card : CardUI):
 	_maybe_remove_card_from_any_piles(card)
 	_maybe_remove_card_from_any_dropzones(card)
 	emit_signal("card_removed_from_game", card)
 	card.queue_free()
 	reset_target_positions()
-	
+
 func is_hand_enabled():
 	return hand_enabled
 
@@ -117,7 +117,7 @@ func get_cards_in_pile(pile : Piles):
 	elif pile == Piles.draw_pile:
 		return _draw_pile.duplicate()
 	return []
-	
+
 func get_card_in_pile_at(pile : Piles, index : int):
 	if pile == Piles.discard_pile and _discard_pile.size() > index:
 		return _discard_pile[index]
@@ -126,7 +126,7 @@ func get_card_in_pile_at(pile : Piles, index : int):
 	elif pile == Piles.hand_pile and _hand_pile.size() > index:
 		return _hand_pile[index]
 	return null
-		
+
 func get_card_pile_size(pile : Piles):
 	if pile == Piles.discard_pile:
 		return _discard_pile.size()
@@ -135,7 +135,7 @@ func get_card_pile_size(pile : Piles):
 	elif pile == Piles.draw_pile:
 		return _draw_pile.size()
 	return 0
-	
+
 
 
 func _maybe_remove_card_from_any_piles(card : CardUI):
@@ -148,14 +148,14 @@ func _maybe_remove_card_from_any_piles(card : CardUI):
 	elif _discard_pile.find(card) != -1:
 		_discard_pile.erase(card)
 		emit_signal("discard_pile_updated")
-		
+
 
 
 func create_card_in_dropzone(nice_name : String, dropzone : CardDropzone):
 	var card_ui = _create_card_ui(_get_card_data_by_nice_name(nice_name))
 	card_ui.position = dropzone.position
 	set_card_dropzone(card_ui, dropzone)
-			
+
 func create_card_in_pile(nice_name : String, pile_to_add_to : Piles):
 	var card_ui = _create_card_ui(_get_card_data_by_nice_name(nice_name))
 	if pile_to_add_to == Piles.hand_pile:
@@ -183,18 +183,18 @@ func get_card_dropzone(card : CardUI):
 			return dropzone
 	return null
 
-			
+
 func _get_dropzones(node: Node, className : String, result : Array) -> void:
 	if node is CardDropzone:
 		result.push_back(node)
 	for child in node.get_children():
 		_get_dropzones(child, className, result)
-	
+
 
 func load_json_path():
 	card_database = _load_json_cards_from_path(json_card_database_path)
 	card_collection = _load_json_cards_from_path(json_card_collection_path)
-	
+
 func _load_json_cards_from_path(path : String):
 	var found = []
 	if path:
@@ -230,12 +230,12 @@ func _ready():
 	load_json_path()
 	_reset_card_collection()
 	reset_target_positions()
-		
+
 func reset_target_positions():
 	_set_draw_pile_target_positions()
 	_set_hand_pile_target_positions()
 	_set_discard_pile_target_positions()
-	
+
 func _set_draw_pile_target_positions(instantly_move = false):
 	for i in _draw_pile.size():
 		var card_ui = _draw_pile[i]
@@ -266,7 +266,7 @@ func _set_draw_pile_target_positions(instantly_move = false):
 		card_ui.set_direction(Vector2.DOWN)
 		if instantly_move:
 			card_ui.position = target_pos
-	
+
 func _set_hand_pile_target_positions():
 	for i in _hand_pile.size():
 		var card_ui = _hand_pile[i]
@@ -289,7 +289,7 @@ func _set_hand_pile_target_positions():
 	while _hand_pile.size() > max_hand_size:
 		set_card_pile(_hand_pile[_hand_pile.size() - 1], Piles.discard_pile)
 	_reset_hand_pile_z_index()
-	
+
 func _set_discard_pile_target_positions():
 	for i in _discard_pile.size():
 		var card_ui = _discard_pile[i]
@@ -358,7 +358,7 @@ func is_any_card_ui_clicked():
 				return true
 	return false
 
-#public function to try and draw a card 
+#public function to try and draw a card
 func draw(num_cards := 1):
 	for i in num_cards:
 		if _hand_pile.size() >= max_hand_size and cant_draw_at_hand_limit:

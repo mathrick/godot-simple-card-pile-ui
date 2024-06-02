@@ -27,7 +27,7 @@ func _on_draw_3_button_pressed():
 
 
 func _on_sort_button_pressed():
-	card_pile_ui.sort_hand(func(a, b): 
+	card_pile_ui.sort_hand(func(a, b):
 		if a.card_data.suit == b.card_data.suit:
 			return a.card_data.value < b.card_data.value
 		else:
@@ -69,7 +69,7 @@ func _on_discard_hand_button_pressed():
 func _on_add_joker_to_dropzones_button_pressed():
 	for dropzone in dropzones:
 		card_pile_ui.create_card_in_dropzone(_get_rand_joker(), dropzone)
-		
+
 
 
 func _on_move_from_dropzone_to_pile_button_pressed():

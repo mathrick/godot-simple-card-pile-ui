@@ -18,7 +18,7 @@ var block := 0 :
 	set(val):
 		block = val
 		_update_display()
-		
+
 var mana := 4 :
 	set(val):
 		mana = val

@@ -156,13 +156,13 @@ func _maybe_remove_card_from_any_piles(card : CardUI):
 		discard_pile_updated.emit()
 
 
-func create_card_in_dropzone(nice_name : String, dropzone : CardDropzone):
-	var card_ui = _create_card_ui(card_database.get_card(nice_name))
+func create_card_in_dropzone(card_id, dropzone : CardDropzone):
+	var card_ui = _create_card_ui(card_database.get_card(card_id))
 	card_ui.position = dropzone.position
 	set_card_dropzone(card_ui, dropzone)
 
-func create_card_in_pile(nice_name : String, pile_to_add_to : Piles):
-	var card_ui = _create_card_ui(card_database.get_card(nice_name))
+func create_card_in_pile(card_id, pile_to_add_to : Piles):
+	var card_ui = _create_card_ui(card_database.get_card(card_id))
 	if pile_to_add_to == Piles.hand_pile:
 		card_ui.position = hand_pile_position
 	if pile_to_add_to == Piles.discard_pile:
@@ -212,8 +212,8 @@ func _reset_card_collection():
 		_maybe_remove_card_from_any_piles(child)
 		_maybe_remove_card_from_any_dropzones(child)
 		remove_card_from_game(child)
-	for nice_name in card_collection.all:
-		var card_data = card_database.get_card(nice_name)
+	for card_id in card_collection.all:
+		var card_data = card_database.get_card(card_id)
 		var card_ui = _create_card_ui(card_data)
 		_draw_pile.push_back(card_ui)
 		_draw_pile.shuffle()

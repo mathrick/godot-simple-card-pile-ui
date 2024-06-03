@@ -113,8 +113,8 @@ This plugin provides a flexible and customizable card pile user interface for th
 
 | Return          | Name                                                                   | Description                                                                       |
 |-----------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
-| `void`          | `create_card_in_dropzone(nice_name : String, dropzone : CardDropzone)` | Creates a new instance of the named card in the given dropzone                    |
-| `void`          | `create_card_in_pile(nice_name : String, pile_to_add_to : Piles)`      | Creates a new instance of the named card in the given pile                        |
+| `void`          | `create_card_in_dropzone(card_id, dropzone : CardDropzone)` | Creates a new instance of the named card in the given dropzone                    |
+| `void`          | `create_card_in_pile(card_id, pile_to_add_to : Piles)`      | Creates a new instance of the named card in the given pile                        |
 | `void`          | `discard_at(index : int)`                                              | Perform a typical "discard" action, moving card from the hand to the discard pile |
 | `void`          | `draw(amount : int = 1)`                                               | Perform a typical "draw" action, moving cards from the draw pile to the hand      |
 | `bool`          | `hand_is_at_max_capacity()`                                            | Checks if hand is at max_capacity (any more cards added to it will be discarded)  |

@@ -8,18 +8,22 @@ This plugin provides a flexible and customizable card pile user interface for th
 
 ## Table of Contents
 
-- [Features](#features)
+- [Features:](#features)
 - [Installation](#installation)
 - [Getting Started](#getting-started)
 - [Concepts](#concepts)
 - [Documentation](#documentation)
-	- [CardPileUI Properties](#card-pile-ui-properties)
-	- [CardPileUI Methods](#card-pile-ui-methods)
-	- [CardPileUI Signals](#card-pile-ui-signals)
-	- [CardDropzone Methods](#card-dropzone-methods)
-	- [CardDropzone Properties](#card-dropzone-properties)
-- [Thanks](#thanks)
-- [Changelog](#change-log)
+    - [CardPileUI Properties](#cardpileui-properties)
+    - [CardPileUI Methods](#cardpileui-methods)
+    - [CardPileUI Signals](#cardpileui-signals)
+    - [CardDropzone Properties](#carddropzone-properties)
+    - [CardDropzone Methods](#carddropzone-methods)
+    - [Card UI Data](#card-ui-data)
+    - [Card Database](#card-database)
+    - [Card Collection](#card-collection)
+- [To Do List](#to-do-list)
+- [Thanks to](#thanks-to)
+- [Changelog](#changelog)
 
 
 <a name="features"></a>
@@ -129,7 +133,7 @@ This plugin provides a flexible and customizable card pile user interface for th
 | `void`          | `sort_hand(sort_func : Callable)`                                      | Sort the hand using a custom function                                             |
 
 <a name="card-pile-ui-signals"></a>
-## CardPileUI Signals
+### CardPileUI Signals
 
 | Signal                                                              | Description                                                   |
 |---------------------------------------------------------------------|---------------------------------------------------------------|
@@ -169,7 +173,7 @@ This plugin provides a flexible and customizable card pile user interface for th
 | `bool`          | `is_holding(card : CardUI)`         | Returns true if this card is piled here                                                                                                                    |
 
 <a name="card-ui-data"></a>
-### `CardUIData`
+### Card UI Data
 `CardUIData` is a resource representing the information to display and
 use a single card. It can be subclassed as necessary to store more
 information relevant to your game, but at the minimum, it needs the
@@ -246,11 +250,11 @@ card database:
 
 
 <a name="card-collection"></a>
-### `CardCollection`
-This represents the cards that begin in the draw pile (ie. the
-deck). Like `CardDB`, `CardCollection` is an abstract base class with
-a number of possible implementations. It only needs to provide one
-method:
+### Card Collection
+`CardCollection` represents the cards that begin in the draw pile
+(ie. the deck). Like `CardDB`, `CardCollection` is an abstract base
+class with a number of possible implementations. It only needs to
+provide one method:
 
 * `_get_all()` - getter for the `all` property, this should return a
   list of all the cards in the deck, represented by their IDs

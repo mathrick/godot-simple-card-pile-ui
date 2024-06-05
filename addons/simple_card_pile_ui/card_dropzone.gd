@@ -47,7 +47,7 @@ func remove_card(card_ui):
 func _update_target_positions():
 	for i in _held_cards.size():
 		var card_ui = _held_cards[i]
-		var target_pos = CardPileUI.calc_card_stack_offset(self, layout, position, i)
+		var target_pos = CardPileUI.calc_card_stack_offset(self, layout, global_position, i)
 		if card_ui_face_up:
 			card_ui.set_direction(Vector2.UP)
 		else:

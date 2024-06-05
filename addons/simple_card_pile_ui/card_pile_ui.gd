@@ -151,19 +151,19 @@ func _maybe_remove_card_from_any_piles(card : CardUI):
 		
 
 
-func create_card_in_dropzone(nice_name : String, dropzone : CardDropzone):
-	var card_ui = _create_card_ui(_get_card_data_by_nice_name(nice_name))
-	card_ui.position = dropzone.position
+func create_card_in_dropzone(card_id, dropzone : CardDropzone):
+	var card_ui = _create_card_ui(card_database.get_card(card_id))
+	card_ui.global_position = dropzone.global_position
 	set_card_dropzone(card_ui, dropzone)
 			
 func create_card_in_pile(nice_name : String, pile_to_add_to : Piles):
 	var card_ui = _create_card_ui(_get_card_data_by_nice_name(nice_name))
 	if pile_to_add_to == Piles.hand_pile:
-		card_ui.position = hand_pile_position
+		card_ui.global_position = hand_pile_position
 	if pile_to_add_to == Piles.discard_pile:
-		card_ui.position = discard_pile_position
+		card_ui.global_position = discard_pile_position
 	if pile_to_add_to == Piles.draw_pile:
-		card_ui.position = draw_pile_position
+		card_ui.global_position = draw_pile_position
 	set_card_pile(card_ui, pile_to_add_to)
 
 
@@ -258,8 +258,8 @@ func _set_draw_pile_target_positions(instantly_move = false):
 		card_ui.target_position = target_pos
 		card_ui.set_direction(Vector2.DOWN)
 		if instantly_move:
-			card_ui.position = target_pos
-	
+			card_ui.global_position = target_pos
+
 func _set_hand_pile_target_positions():
 	for i in _hand_pile.size():
 		var card_ui = _hand_pile[i]

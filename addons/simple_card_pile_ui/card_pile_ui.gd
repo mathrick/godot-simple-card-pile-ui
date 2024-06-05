@@ -235,31 +235,24 @@ func reset_target_positions():
 	_set_draw_pile_target_positions()
 	_set_hand_pile_target_positions()
 	_set_discard_pile_target_positions()
-	
+
+static func calc_card_stack_offset(pile, layout, pos, index):
+	var delta_pos = pile.stack_display_gap * min(index, pile.max_stack_display)
+	if layout == PilesCardLayouts.up:
+		pos.y -= delta_pos
+	elif layout == PilesCardLayouts.down:
+		pos.y += delta_pos
+	elif layout == PilesCardLayouts.right:
+		pos.x += delta_pos
+	elif layout == PilesCardLayouts.left:
+		pos.x -= delta_pos
+
+	return pos
+
 func _set_draw_pile_target_positions(instantly_move = false):
 	for i in _draw_pile.size():
 		var card_ui = _draw_pile[i]
-		var target_pos = draw_pile_position
-		if draw_pile_layout == CardPileUI.PilesCardLayouts.up:
-			if i <= max_stack_display:
-				target_pos.y -= i * stack_display_gap
-			else:
-				target_pos.y -= stack_display_gap * max_stack_display
-		elif draw_pile_layout == CardPileUI.PilesCardLayouts.down:
-			if i <= max_stack_display:
-				target_pos.y += i * stack_display_gap
-			else:
-				target_pos.y += stack_display_gap * max_stack_display
-		elif draw_pile_layout == CardPileUI.PilesCardLayouts.right:
-			if i <= max_stack_display:
-				target_pos.x += i * stack_display_gap
-			else:
-				target_pos.x += stack_display_gap * max_stack_display
-		elif draw_pile_layout == CardPileUI.PilesCardLayouts.left:
-			if i <= max_stack_display:
-				target_pos.x -= i * stack_display_gap
-			else:
-				target_pos.x -= stack_display_gap * max_stack_display
+		var target_pos = calc_card_stack_offset(self, draw_pile_layout, draw_pile_position, i)
 		card_ui.z_index = i
 		card_ui.rotation = 0
 		card_ui.target_position = target_pos
@@ -293,27 +286,7 @@ func _set_hand_pile_target_positions():
 func _set_discard_pile_target_positions():
 	for i in _discard_pile.size():
 		var card_ui = _discard_pile[i]
-		var target_pos = discard_pile_position
-		if discard_pile_layout == CardPileUI.PilesCardLayouts.up:
-			if i <= max_stack_display:
-				target_pos.y -= i * stack_display_gap
-			else:
-				target_pos.y -= stack_display_gap * max_stack_display
-		elif draw_pile_layout == CardPileUI.PilesCardLayouts.down:
-			if i <= max_stack_display:
-				target_pos.y += i * stack_display_gap
-			else:
-				target_pos.y += stack_display_gap * max_stack_display
-		elif discard_pile_layout == CardPileUI.PilesCardLayouts.right:
-			if i <= max_stack_display:
-				target_pos.x += i * stack_display_gap
-			else:
-				target_pos.x += stack_display_gap * max_stack_display
-		elif discard_pile_layout == CardPileUI.PilesCardLayouts.left:
-			if i <= max_stack_display:
-				target_pos.x -= i * stack_display_gap
-			else:
-				target_pos.x -= stack_display_gap * max_stack_display
+		var target_pos = calc_card_stack_offset(self, discard_pile_layout, discard_pile_position, i)
 		if discard_face_up:
 			card_ui.set_direction(Vector2.UP)
 		else:

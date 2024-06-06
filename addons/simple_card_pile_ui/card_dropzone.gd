@@ -39,7 +39,7 @@ func get_held_cards():
 func add_card(card_ui):
 	_held_cards.push_back(card_ui)
 	#_update_target_positions()
-	
+
 func remove_card(card_ui):
 	_held_cards = _held_cards.filter(func(c): return c != card_ui)
 	#_update_target_positions()
@@ -47,33 +47,13 @@ func remove_card(card_ui):
 func _update_target_positions():
 	for i in _held_cards.size():
 		var card_ui = _held_cards[i]
-		var target_pos = position
-		if layout == CardPileUI.PilesCardLayouts.up:
-			if i <= max_stack_display:
-				target_pos.y -= i * stack_display_gap
-			else:
-				target_pos.y -= stack_display_gap * max_stack_display
-		elif layout == CardPileUI.PilesCardLayouts.down:
-			if i <= max_stack_display:
-				target_pos.y += i * stack_display_gap
-			else:
-				target_pos.y += stack_display_gap * max_stack_display
-		elif layout == CardPileUI.PilesCardLayouts.right:
-			if i <= max_stack_display:
-				target_pos.x += i * stack_display_gap
-			else:
-				target_pos.x += stack_display_gap * max_stack_display
-		elif layout == CardPileUI.PilesCardLayouts.left:
-			if i <= max_stack_display:
-				target_pos.x -= i * stack_display_gap
-			else:
-				target_pos.x -= stack_display_gap * max_stack_display
+		var target_pos = CardPileUI.calc_card_stack_offset(self, layout, global_position, i)
 		if card_ui_face_up:
 			card_ui.set_direction(Vector2.UP)
 		else:
 			card_ui.set_direction(Vector2.DOWN)
 		if card_ui.is_clicked:
-			card_ui.z_index = 3000 + i 
+			card_ui.z_index = 3000 + i
 		else:
 			card_ui.z_index = i
 		card_ui.move_to_front() # must also do this to account for INVISIBLE INTERACTION ORDER

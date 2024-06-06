@@ -137,9 +137,9 @@ func _process(_delta):
 	if is_clicked and drag_when_clicked:
 		target_position = get_global_mouse_position() - custom_minimum_size * 0.5
 	if is_clicked:
-		position = target_position
-	elif position != target_position:
-		position = lerp(position, target_position, return_speed)
+		global_position = target_position
+	elif global_position != target_position:
+		global_position = lerp(global_position, target_position, return_speed)
 
 	if Engine.is_editor_hint() and last_child_count != get_child_count():
 		update_configuration_warnings()

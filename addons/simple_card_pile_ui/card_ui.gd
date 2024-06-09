@@ -134,12 +134,20 @@ func get_dropzones(node: Node, className : String, result : Array) -> void:
 		get_dropzones(child, className, result)
 
 func _process(_delta):
+	# global_position doesn't work properly with rotation applied,
+	# and it's easiest to just temporarily set it to 0
+	var old_rotation = rotation
+	rotation = 0
+
 	if is_clicked and drag_when_clicked:
 		target_position = get_global_mouse_position() - custom_minimum_size * 0.5
 	if is_clicked:
 		global_position = target_position
 	elif global_position != target_position:
 		global_position = lerp(global_position, target_position, return_speed)
+
+	# restore the rotation
+	rotation = old_rotation
 
 	if Engine.is_editor_hint() and last_child_count != get_child_count():
 		update_configuration_warnings()
